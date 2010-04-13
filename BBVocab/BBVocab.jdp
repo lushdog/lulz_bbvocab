@@ -1,0 +1,52 @@
+## RIM Java Development Environment
+# RIM Project file
+#
+# This file is generated and managed by BlackBerry developer tools.
+# It SHOULD NOT BE modified manually.
+#
+AddOn=0
+AlwaysBuild=0
+[AlxImports
+]
+AutoRestart=0
+[ClassProtection
+]
+[CustomBuildFiles
+]
+[CustomBuildRules
+]
+[DefFiles
+]
+[DependsOn
+]
+ExcludeFromBuildAll=0
+[Files
+src\com\juksoft\bbvocab\ConnectionFactory.java
+src\com\juksoft\bbvocab\Dictionary.java
+src\com\juksoft\bbvocab\dictionary\DictionaryWrapper.java
+src\com\juksoft\bbvocab\MainScreenUpdaterThread.java
+src\com\juksoft\bbvocab\VocabApp.java
+src\com\juksoft\bbvocab\VocabAppMainScreen.java
+]
+HaveAlxImports=0
+HaveDefs=0
+HaveImports=1
+[Icons
+]
+[ImplicitRules
+]
+[Imports
+]
+Listing=0
+Options=-quiet
+OutputFileName=BBVocab
+[PackageProtection
+]
+RibbonPosition=0
+[RolloverIcons
+]
+RunOnStartup=0
+StartupTier=7
+SystemModule=0
+Type=0
+UserData=|src
