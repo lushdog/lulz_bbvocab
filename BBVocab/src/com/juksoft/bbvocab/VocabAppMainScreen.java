@@ -4,8 +4,7 @@ import java.io.IOException;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.container.MainScreen;
-
-import com.juksoft.bbvocab.dictionary.DictionaryWrapper;
+//import com.juksoft.bbvocab.Dictionary;
 
 public class VocabAppMainScreen extends MainScreen implements FieldChangeListener {
 	
@@ -57,7 +56,8 @@ public class VocabAppMainScreen extends MainScreen implements FieldChangeListene
 		//MainScreenUpdaterThread mainScreenUpdaterThread = new MainScreenUpdaterThread(this);
 		//mainScreenUpdaterThread.start();
 		try {
-			Dictionary dw = new Dictionary();
+			String[] errorMessage = new String[1];
+			String[] definitions = Dictionary.getDefinition("apple", errorMessage);
 		}
 		catch (IOException ex) {
 			System.out.println(ex.getMessage());
