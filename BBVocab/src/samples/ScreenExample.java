@@ -1,12 +1,14 @@
-package com.juksoft.bbvocab;
+package samples;
 
-import java.io.IOException;
+//import java.io.IOException;
+
+//import com.juksoft.bbvocab.Dictionary;
+
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.container.MainScreen;
-//import com.juksoft.bbvocab.Dictionary;
 
-public class VocabAppMainScreen extends MainScreen implements FieldChangeListener {
+public class ScreenExample extends MainScreen implements FieldChangeListener {
 	
 	/*private LabelField labelField;
 	private BitmapField header;
@@ -18,6 +20,8 @@ public class VocabAppMainScreen extends MainScreen implements FieldChangeListene
 	private HorizontalFieldManager horizontalFieldManager;
 	private ButtonField reset;
 	private ButtonField login;
+	
+	
 	
 	class LoginMenuItem extends MenuItem {
 		public LoginMenuItem() {
@@ -40,7 +44,7 @@ public class VocabAppMainScreen extends MainScreen implements FieldChangeListene
 	}		
 	*/
 	
-	public VocabAppMainScreen() {
+	public ScreenExample() {
 		
 		//Move to (initApp())
 		/*Hashtable hashTable = new Hashtable();
@@ -55,13 +59,13 @@ public class VocabAppMainScreen extends MainScreen implements FieldChangeListene
 		
 		//MainScreenUpdaterThread mainScreenUpdaterThread = new MainScreenUpdaterThread(this);
 		//mainScreenUpdaterThread.start();
-		try {
-			String[] errorMessage = new String[1];
-			String[] definitions = Dictionary.getDefinition("apple", errorMessage);
-		}
-		catch (IOException ex) {
-			System.out.println(ex.getMessage());
-		}
+		//try {
+			//String[] errorMessage = new String[1];
+			//String[] definitions = (String[]) Dictionary.getDefinitions("apple");
+		//}
+		//catch (IOException ex) {
+			//System.out.println(ex.getMessage());
+		//}
 	}	
 	
 	/*public void changeLabel(String newLabel) {

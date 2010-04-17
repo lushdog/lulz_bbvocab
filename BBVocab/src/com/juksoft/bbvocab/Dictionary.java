@@ -29,42 +29,41 @@ public class Dictionary {
 		{
 			ConnectionFactory cf = new ConnectionFactory();
 			socket = cf.getSocketConnection(DICT_MAIN_HOST, DICT_PORT, TIMEOUT);
-			is = socket.openInputStream();	//read banner and discard
-			readFromStream(is, false);
+			is = socket.openInputStream();	
+			readFromStream(is, false); //read banner and discard
 			
 			os = new OutputStreamWriter(socket.openOutputStream());
-			String commandString = "DEFINE " + WORDNET_DB + " " + searchWord.trim() + "\r\n";
+			String commandString = "DEFINE " + WORDNET_DB + " " + searchWord.trim().toLowerCase() + "\r\n";
 			os.write(commandString);		
 			
-			String statusResponse = readFromStream(is, false);
+			String definitionsResponse = readFromStream(is, true);
 			/*
 			550 Invalid database, use "SHOW DB" for list of databases
 			552 No match
-	        150 n definitions retrieved - definitions follow
+	        150 n definitions retrieved - definitions (151) follow, may be in same chunk or next chunk
 		    151 word database name - text follows //start of definition
-		    250 ok (optional timing information here) //finished sending defintions
+		    250 ok (optional timing information here) //finished sending definitions
 			*/
-			int statusCode = Integer.parseInt(statusResponse.substring(0, 3));
+			int statusCode = Integer.parseInt(definitionsResponse.substring(0, 3));
 			if (statusCode != 150) {
 				
 				returnBundle[0] = null;
-				returnBundle[1] = statusResponse.substring(4, statusResponse.indexOf('[')).toUpperCase();
+				returnBundle[1] = definitionsResponse.substring(4, definitionsResponse.indexOf('[')).toUpperCase();
 				return returnBundle;
 			}
 			
-			//int numDefinitions = Integer.parseInt(statusResponse.substring(4,5));
-			String definitionsResponse = readFromStream(is, true);
+			//int numDefinitions = Integer.parseInt(definitionsResponse.substring(4,5));
 			definitions = split(definitionsResponse, DEF_DELIMITER);
 			for(int i = 0; i < definitions.length; i++) {
-				//remove 151 status code text for each def
-				definitions[i] = definitions[i].substring(definitions[i].indexOf("\r\n") + 2);
+				//remove 151 status code text for each definition
+				definitions[i] = definitions[i].substring
+					(definitions[i].indexOf("\r\n", definitions[i].indexOf("151 " + "\"" + searchWord.toLowerCase() + "\"") ) + 2);
 			}
 			returnBundle[0] = definitions;
 			returnBundle[1] = null;
 			
 			commandString = "QUIT";
-			os.write(commandString);		
-			
+			os.write(commandString);			
 		}
 		catch(Exception ex)
 		{
@@ -105,10 +104,13 @@ public class Dictionary {
 	
 	private static String readFromStream(InputStream is, boolean isDefinition) throws IOException {
 		StringBuffer stringRead = new StringBuffer();
-		stringRead.append(readBytesAvailable(is));
+		String firstBlock = readBytesAvailable(is);
+		stringRead.append(firstBlock);
+		
 		while((isDefinition) && 
 				(stringRead.toString().toLowerCase().indexOf(DEF_DELIMITER + DEF_END_TOKEN) == -1))  {
-			stringRead.append(readBytesAvailable(is));
+			String block = readBytesAvailable(is);
+			stringRead.append(block);		
 		}
 		return stringRead.toString();
 	}

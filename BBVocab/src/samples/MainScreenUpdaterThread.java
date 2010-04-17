@@ -1,12 +1,13 @@
-package com.juksoft.bbvocab;
+package samples;
+
 
 import net.rim.device.api.ui.UiApplication;
 
 public class MainScreenUpdaterThread extends Thread {
 
-	VocabAppMainScreen mainScreen;
+	ScreenExample mainScreen;
 	
-	public MainScreenUpdaterThread(VocabAppMainScreen mainScreen) {
+	public MainScreenUpdaterThread(ScreenExample mainScreen) {
 		this.mainScreen = mainScreen;
 	}
 	

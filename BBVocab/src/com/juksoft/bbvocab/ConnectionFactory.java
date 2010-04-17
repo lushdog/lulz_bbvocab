@@ -12,9 +12,12 @@ import net.rim.device.api.system.WLANInfo;
 
 public class ConnectionFactory {
 	
+	public static final int COVERAGE_DIRECT = 1;
+	
 	public SocketConnection getSocketConnection(String host, int port, int timeoutInSeconds) throws IOException  {
 		String connectionString = "socket://" + host + ":" + port + getConnectionParameters() + 
 										";ConnectionTimeout=" + (timeoutInSeconds * 1000);
+		System.out.println(connectionString);
 		SocketConnection socket = (SocketConnection)Connector.open(connectionString, Connector.READ_WRITE, true);
 		return socket;
 	}	
@@ -30,15 +33,15 @@ public class ConnectionFactory {
 			int coverageStatus = CoverageInfo.getCoverageStatus(); //bitmask of coverage status info
 			ServiceRecord record = getWAP2ServiceRecord();
 			if (record != null && 
-					(coverageStatus & CoverageInfo.COVERAGE_DIRECT) == CoverageInfo.COVERAGE_DIRECT) {
+					(coverageStatus & COVERAGE_DIRECT) == COVERAGE_DIRECT) {
 				//Network coverage and WAP 2.0 service book record
-				connectionParameters = ";deviceside=true;ConnectionUID=" + record.getUid();
+				connectionParameters = ";deviceside=true;ConnectionUID=\"" + record.getUid()+"\"";
 			}
 			else if ((coverageStatus & CoverageInfo.COVERAGE_MDS) == CoverageInfo.COVERAGE_MDS)  {
 				//Network coverage and MDS 
 				connectionParameters = ";deviceside=false";
 			}
-			else if ((coverageStatus & CoverageInfo.COVERAGE_DIRECT) == CoverageInfo.COVERAGE_DIRECT) {
+			else if ((coverageStatus & COVERAGE_DIRECT) == COVERAGE_DIRECT) {
 				//Network coverage but no WAP 2.0
 				connectionParameters =";deviceside=true";
 			}						

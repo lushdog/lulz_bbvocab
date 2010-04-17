@@ -1,0 +1,31 @@
+<loader version="1.0">
+	<application id="BBVocab">
+		<name >
+			
+		</name>
+		<description >
+			
+		</description>
+		<version >
+			
+		</version>
+		<vendor >
+			MyCompany
+		</vendor>
+		<copyright >
+			Copyright (c) 2010 MyCompany
+		</copyright>
+		<fileset Java="1.39">
+			<directory >
+				
+			</directory>
+			<files >
+				BBVocab.cod
+
+			</files>
+
+		</fileset>
+
+	</application>
+
+</loader>
