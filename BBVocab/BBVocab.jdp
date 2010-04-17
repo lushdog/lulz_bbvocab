@@ -24,9 +24,13 @@ ExcludeFromBuildAll=0
 src\com\juksoft\bbvocab\ConnectionFactory.java
 src\com\juksoft\bbvocab\Dictionary.java
 src\com\juksoft\bbvocab\dictionary\DictionaryWrapper.java
+src\com\juksoft\bbvocab\GetDefinitionThread.java
 src\com\juksoft\bbvocab\MainScreenUpdaterThread.java
 src\com\juksoft\bbvocab\VocabApp.java
 src\com\juksoft\bbvocab\VocabAppMainScreen.java
+src\com\juksoft\bbvocab\VocabMainScreen.java
+src\samples\MainScreenUpdaterThread.java
+src\samples\ScreenExample.java
 ]
 HaveAlxImports=0
 HaveDefs=0

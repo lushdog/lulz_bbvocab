@@ -10,15 +10,19 @@ import javax.microedition.io.SocketConnection;
 
 public class Dictionary {
 	
+	private static final String DEF_DELIMITER = "\r\n.\r\n";
 	public static final String DICT_MAIN_HOST = "dict.org";
 	public static final int DICT_PORT = 2628;
 	public static final int TIMEOUT = 15;
 	public static final int READ_BUFFER = 1024;
-	
-	public static String[] getDefinition(String searchWord, String[] errorMessage) throws IOException {
+	public static final String DEF_END_TOKEN = "250 ok";
+	public static final String WORDNET_DB = "wn";
+
+	public static Object[] getDefinitions(String searchWord) throws IOException {
 		InputStream is = null;
 		OutputStreamWriter os = null;
 		SocketConnection socket = null;
+		Object[] returnBundle = new Object[2]; //0 is the string[] for defs, 1 is for error message
 		String[] definitions = null;
 		
 		try
@@ -26,37 +30,41 @@ public class Dictionary {
 			ConnectionFactory cf = new ConnectionFactory();
 			socket = cf.getSocketConnection(DICT_MAIN_HOST, DICT_PORT, TIMEOUT);
 			is = socket.openInputStream();	//read banner and discard
-			readFromStream(is);
+			readFromStream(is, false);
 			
 			os = new OutputStreamWriter(socket.openOutputStream());
-			String commandString = "DEFINE ! " + searchWord.trim() + "\r\n";
+			String commandString = "DEFINE " + WORDNET_DB + " " + searchWord.trim() + "\r\n";
 			os.write(commandString);		
 			
-			String statusResponse = readFromStream(is);
+			String statusResponse = readFromStream(is, false);
 			/*
 			550 Invalid database, use "SHOW DB" for list of databases
 			552 No match
 	        150 n definitions retrieved - definitions follow
-		    151 word database name - text follows
-		    250 ok (optional timing information here)
+		    151 word database name - text follows //start of definition
+		    250 ok (optional timing information here) //finished sending defintions
 			*/
 			int statusCode = Integer.parseInt(statusResponse.substring(0, 3));
 			if (statusCode != 150) {
-				errorMessage[0] = statusResponse.substring(5);
-				return null;
+				
+				returnBundle[0] = null;
+				returnBundle[1] = statusResponse.substring(4, statusResponse.indexOf('[')).toUpperCase();
+				return returnBundle;
 			}
 			
-			int numDefinitions = Integer.parseInt(statusResponse.substring(4,5));
-			definitions = new String[numDefinitions];
-			
-			String definitionsResponse = readFromStream(is);
-			for(int i = 0; i < numDefinitions; i++) {
-				//split on def delimiter, drop 250 OK status code text after defs
-				String definition = split(definitionsResponse, "\r\n.\r\n")[i];
+			//int numDefinitions = Integer.parseInt(statusResponse.substring(4,5));
+			String definitionsResponse = readFromStream(is, true);
+			definitions = split(definitionsResponse, DEF_DELIMITER);
+			for(int i = 0; i < definitions.length; i++) {
 				//remove 151 status code text for each def
-				definition = definition.substring(definition.indexOf("\r\n") + 2);  				
-				definitions[i] = definition;	
+				definitions[i] = definitions[i].substring(definitions[i].indexOf("\r\n") + 2);
 			}
+			returnBundle[0] = definitions;
+			returnBundle[1] = null;
+			
+			commandString = "QUIT";
+			os.write(commandString);		
+			
 		}
 		catch(Exception ex)
 		{
@@ -68,10 +76,10 @@ public class Dictionary {
 			os.close();
 			socket.close();
 		}
-		return definitions;
+		return returnBundle;
 	}
 
-	public static String getBanner() throws IOException {
+	/*public static String getBanner() throws IOException {
 		InputStream is = null;
 		SocketConnection socket = null;
 		String banner = "";
@@ -80,7 +88,7 @@ public class Dictionary {
 			ConnectionFactory cf = new ConnectionFactory();
 			socket = cf.getSocketConnection(DICT_MAIN_HOST, DICT_PORT, TIMEOUT);
 			is = socket.openInputStream();	
-			banner = readFromStream(is);
+			banner = readFromStream(is, false);
 		}
 		catch(Exception ex)
 		{
@@ -93,35 +101,44 @@ public class Dictionary {
 		}
 		return banner;
 	}
+	*/
 	
-	private static String readFromStream(InputStream is) throws IOException {
+	private static String readFromStream(InputStream is, boolean isDefinition) throws IOException {
 		StringBuffer stringRead = new StringBuffer();
+		stringRead.append(readBytesAvailable(is));
+		while((isDefinition) && 
+				(stringRead.toString().toLowerCase().indexOf(DEF_DELIMITER + DEF_END_TOKEN) == -1))  {
+			stringRead.append(readBytesAvailable(is));
+		}
+		return stringRead.toString();
+	}
+
+	private static String readBytesAvailable(InputStream is) throws IOException {
+		
+		int bytesRead = 0;
+		int numBytesAvailable = 0;
+		StringBuffer stringBlock  = new StringBuffer();
 		
 		int firstByte = is.read(); //block until first byte
 		if (firstByte >= 0) {
 			char firstChar = (char)firstByte;
-			stringRead.append(firstChar);
+			stringBlock.append(firstChar);
 			
-			int numBytesInStream = is.available();
-			int bytesRead = 0;
-			while (bytesRead < numBytesInStream) {
-				int bufferSize = READ_BUFFER;
-				if (numBytesInStream - bytesRead < READ_BUFFER) {
-					bufferSize = numBytesInStream - bytesRead;
-				}
-				byte[] buffer = new byte[bufferSize];
-				
+			numBytesAvailable = is.available();
+			while(numBytesAvailable  > 0) {
+			    byte[] buffer = new byte[numBytesAvailable];					
 				bytesRead += is.read(buffer);
-				stringRead.append(new String(buffer));
+				stringBlock.append(new String(buffer));
+				numBytesAvailable = is.available();
 			}
 		}
-		System.out.println("in:" + stringRead.toString());
-		return stringRead.toString();
+		/*System.out.println("in:" + stringBlock.toString());
+		System.out.println("in numBytesAvailable:" + numBytesAvailable);
+		System.out.println("in bytesRead:" + bytesRead);
+		System.out.println("in isAvailable:" + is.available());*/
+		return stringBlock.toString();		
 	}	
 
-	//Identifies the substrings in a given string that are delimited
-	//by one or more characters specified in an array, and then
-	//places the substrings into a String array.
 	public static String[] split(String strString, String strDelimiter) {
 	    String[] strArray;
 	    int iOccurrences = 0;
