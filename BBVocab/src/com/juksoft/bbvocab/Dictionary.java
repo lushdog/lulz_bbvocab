@@ -8,15 +8,17 @@ import java.io.OutputStreamWriter;
 
 import javax.microedition.io.SocketConnection;
 
+import net.rim.device.api.ui.component.Dialog;
+
 public class Dictionary {
 	
 	private static final String DEF_DELIMITER = "\r\n.\r\n";
-	public static final String DICT_MAIN_HOST = "dict.org";
-	public static final int DICT_PORT = 2628;
-	public static final int TIMEOUT = 15;
-	public static final int READ_BUFFER = 1024;
-	public static final String DEF_END_TOKEN = "250 ok";
-	public static final String WORDNET_DB = "wn";
+	private static final String STATUS_END_TOKEN = "\r\n";
+	private static final String DICT_MAIN_HOST = "dict.org";
+	private static final int DICT_PORT = 2628;
+	private static final int TIMEOUT = 15;
+	private static final String DEF_END_TOKEN = "250 ok";
+	private static final String WORDNET_DB = "wn";
 
 	public static Object[] getDefinitions(String searchWord) throws IOException {
 		InputStream is = null;
@@ -30,7 +32,8 @@ public class Dictionary {
 			ConnectionFactory cf = new ConnectionFactory();
 			socket = cf.getSocketConnection(DICT_MAIN_HOST, DICT_PORT, TIMEOUT);
 			is = socket.openInputStream();	
-			readFromStream(is, false); //read banner and discard
+			String banner = readFromStream(is, false); //read banner and discard
+			System.out.println(banner);
 			
 			os = new OutputStreamWriter(socket.openOutputStream());
 			String commandString = "DEFINE " + WORDNET_DB + " " + searchWord.trim().toLowerCase() + "\r\n";
@@ -52,12 +55,10 @@ public class Dictionary {
 				return returnBundle;
 			}
 			
-			//int numDefinitions = Integer.parseInt(definitionsResponse.substring(4,5));
-			definitions = split(definitionsResponse, DEF_DELIMITER);
+			String[] splitResponse = split(definitionsResponse, DEF_DELIMITER);
+			definitions = new String[splitResponse.length - 1]; //chop off 250 ok status msg
 			for(int i = 0; i < definitions.length; i++) {
-				//remove 151 status code text for each definition
-				definitions[i] = definitions[i].substring
-					(definitions[i].indexOf("\r\n", definitions[i].indexOf("151 " + "\"" + searchWord.toLowerCase() + "\"") ) + 2);
+				definitions[i] = formatDefinition(splitResponse[i]);
 			}
 			returnBundle[0] = definitions;
 			returnBundle[1] = null;
@@ -66,8 +67,10 @@ public class Dictionary {
 			os.write(commandString);			
 		}
 		catch(Exception ex)
-		{
+		{	
 			System.out.println(ex.getMessage());
+			Dialog.alert(ex.getMessage());
+			ex.printStackTrace();
 		}
 		finally
 		{
@@ -78,6 +81,14 @@ public class Dictionary {
 		return returnBundle;
 	}
 
+	private static String formatDefinition(String definition) {
+		//strip def 151 header
+		String defHeader = "151 ";
+		String defHeaderEndToken = "\r\n";
+		String defLessHeader = definition.substring(definition.indexOf(defHeaderEndToken, definition.indexOf(defHeader)) + 2);
+		return defLessHeader;
+	}
+	
 	/*public static String getBanner() throws IOException {
 		InputStream is = null;
 		SocketConnection socket = null;
@@ -107,8 +118,13 @@ public class Dictionary {
 		String firstBlock = readBytesAvailable(is);
 		stringRead.append(firstBlock);
 		
-		while((isDefinition) && 
-				(stringRead.toString().toLowerCase().indexOf(DEF_DELIMITER + DEF_END_TOKEN) == -1))  {
+		String endToken;
+		if (isDefinition)
+			endToken = DEF_DELIMITER + DEF_END_TOKEN;
+		else
+			endToken = STATUS_END_TOKEN;
+		
+		while(stringRead.toString().toLowerCase().indexOf(endToken) == -1)  {
 			String block = readBytesAvailable(is);
 			stringRead.append(block);		
 		}
@@ -134,10 +150,10 @@ public class Dictionary {
 				numBytesAvailable = is.available();
 			}
 		}
-		/*System.out.println("in:" + stringBlock.toString());
+		System.out.println("in:" + stringBlock.toString());
 		System.out.println("in numBytesAvailable:" + numBytesAvailable);
 		System.out.println("in bytesRead:" + bytesRead);
-		System.out.println("in isAvailable:" + is.available());*/
+		System.out.println("in isAvailable:" + is.available());
 		return stringBlock.toString();		
 	}	
 
