@@ -16,7 +16,7 @@ public class ConnectionFactory {
 	
 	public SocketConnection getSocketConnection(String host, int port, int timeoutInSeconds) throws IOException  {
 		String connectionString = "socket://" + host + ":" + port + getConnectionParameters() + 
-										";ConnectionTimeout=" + (timeoutInSeconds * 1000) + ";";
+										";ConnectionTimeout=" + (timeoutInSeconds * 1000);
 		System.out.println(connectionString);
 		SocketConnection socket = (SocketConnection)Connector.open(connectionString, Connector.READ_WRITE, true);
 		return socket;

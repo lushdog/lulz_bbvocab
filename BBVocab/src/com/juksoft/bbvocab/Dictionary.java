@@ -8,19 +8,18 @@ import java.io.OutputStreamWriter;
 
 import javax.microedition.io.SocketConnection;
 
-import net.rim.device.api.ui.component.Dialog;
-
 public class Dictionary {
 	
+	private static final String NO_MATCH_TOKEN = "552 no match";
 	private static final String DEF_DELIMITER = "\r\n.\r\n";
+	private static final String DEF_END_TOKEN = "250 ok";
 	private static final String STATUS_END_TOKEN = "\r\n";
 	private static final String DICT_MAIN_HOST = "dict.org";
 	private static final int DICT_PORT = 2628;
 	private static final int TIMEOUT = 15;
-	private static final String DEF_END_TOKEN = "250 ok";
 	private static final String WORDNET_DB = "wn";
 
-	public static Object[] getDefinitions(String searchWord) throws IOException {
+	public static Object[] getDefinitions(String searchWord) throws Exception {
 		InputStream is = null;
 		OutputStreamWriter os = null;
 		SocketConnection socket = null;
@@ -48,8 +47,7 @@ public class Dictionary {
 		    250 ok (optional timing information here) //finished sending definitions
 			*/
 			int statusCode = Integer.parseInt(definitionsResponse.substring(0, 3));
-			if (statusCode != 150) {
-				
+			if (statusCode != 150) {				
 				returnBundle[0] = null;
 				returnBundle[1] = definitionsResponse.substring(4, definitionsResponse.indexOf('[')).toUpperCase();
 				return returnBundle;
@@ -69,16 +67,18 @@ public class Dictionary {
 		catch(Exception ex)
 		{	
 			System.out.println(ex.getMessage());
-			Dialog.alert(ex.getMessage());
-			ex.printStackTrace();
+			throw new Exception(ex.getMessage());
 		}
 		finally
 		{
-			is.close();
-			os.close();
-			socket.close();
+			if (is != null)
+				is.close();
+			if (os != null)				
+				os.close();
+			if (socket != null)
+				socket.close();			
 		}
-		return returnBundle;
+		return returnBundle;		
 	}
 
 	private static String formatDefinition(String definition) {
@@ -87,46 +87,25 @@ public class Dictionary {
 		String defHeaderEndToken = "\r\n";
 		String defLessHeader = definition.substring(definition.indexOf(defHeaderEndToken, definition.indexOf(defHeader)) + 2);
 		return defLessHeader;
-	}
-	
-	/*public static String getBanner() throws IOException {
-		InputStream is = null;
-		SocketConnection socket = null;
-		String banner = "";
-		try
-		{
-			ConnectionFactory cf = new ConnectionFactory();
-			socket = cf.getSocketConnection(DICT_MAIN_HOST, DICT_PORT, TIMEOUT);
-			is = socket.openInputStream();	
-			banner = readFromStream(is, false);
-		}
-		catch(Exception ex)
-		{
-			System.out.println(ex.getMessage());
-		}
-		finally
-		{
-			is.close();
-			socket.close();
-		}
-		return banner;
-	}
-	*/
+	}	
 	
 	private static String readFromStream(InputStream is, boolean isDefinition) throws IOException {
 		StringBuffer stringRead = new StringBuffer();
 		String firstBlock = readBytesAvailable(is);
-		stringRead.append(firstBlock);
+		stringRead.append(firstBlock);		
 		
-		String endToken;
-		if (isDefinition)
-			endToken = DEF_DELIMITER + DEF_END_TOKEN;
-		else
-			endToken = STATUS_END_TOKEN;
-		
-		while(stringRead.toString().toLowerCase().indexOf(endToken) == -1)  {
-			String block = readBytesAvailable(is);
-			stringRead.append(block);		
+		//a 'response' terminator from the DICT protocol would end this shit below
+		if (isDefinition) {
+			while(stringRead.toString().toLowerCase().indexOf(DEF_END_TOKEN) == -1 && stringRead.toString().toLowerCase().indexOf(NO_MATCH_TOKEN) == -1)  {
+				String block = readBytesAvailable(is);
+				stringRead.append(block);		
+			}
+		}
+		else {
+			while(stringRead.toString().toLowerCase().indexOf(STATUS_END_TOKEN) == -1) {
+				String block = readBytesAvailable(is);
+				stringRead.append(block);		
+			}
 		}
 		return stringRead.toString();
 	}
@@ -150,10 +129,10 @@ public class Dictionary {
 				numBytesAvailable = is.available();
 			}
 		}
-		System.out.println("in:" + stringBlock.toString());
+		/*System.out.println("in:" + stringBlock.toString());
 		System.out.println("in numBytesAvailable:" + numBytesAvailable);
 		System.out.println("in bytesRead:" + bytesRead);
-		System.out.println("in isAvailable:" + is.available());
+		System.out.println("in isAvailable:" + is.available());*/
 		return stringBlock.toString();		
 	}	
 

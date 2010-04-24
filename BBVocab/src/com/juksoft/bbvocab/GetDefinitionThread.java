@@ -1,9 +1,6 @@
 package com.juksoft.bbvocab;
 
-import java.io.IOException;
-
 import net.rim.device.api.system.Application;
-import net.rim.device.api.ui.component.Dialog;
 
 public class GetDefinitionThread extends Thread {
 
@@ -24,18 +21,20 @@ public class GetDefinitionThread extends Thread {
 				    updateDefinitionText(errorMessage);				    
 				}
 				else  {
-					Dialog.alert("Request returned with no definitions or error messages.");
+					updateDefinitionText("Request returned with no definitions or error messages.");
 				}
 			}
 			else {
 				updateDefinitionText(definitions[0]);
-			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			Dialog.alert(e.getMessage());
-		}		
+			}			
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			System.out.println(msg);
+			updateDefinitionText(msg);
+		}
+				 	
 	}
+	
 	protected void updateDefinitionText(final String string) {
 		Application.getApplication().invokeLater(
 				new Runnable() 
