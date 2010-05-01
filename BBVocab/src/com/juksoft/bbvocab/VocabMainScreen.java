@@ -34,7 +34,7 @@ public class VocabMainScreen extends MainScreen implements FieldChangeListener {
 		separator = new SeparatorField();
 		this.add(separator);
 		definitionText = new RichTextField(RichTextField.USE_ALL_HEIGHT);
-		this.add(definitionText);		
+		this.add(definitionText);
 	}
 	
 	protected void makeMenu(Menu menu, int instance) {
@@ -72,5 +72,11 @@ public class VocabMainScreen extends MainScreen implements FieldChangeListener {
 		public void run() {
 			UiApplication.getUiApplication().pushScreen(new MyWordsScreen());
 		}		
+	}
+	
+	public boolean onClose() {
+		Settings.INSTANCE.saveSettings();
+		this.close();
+		return true;
 	}
 }

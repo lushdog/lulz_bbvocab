@@ -1,10 +1,10 @@
 package com.juksoft.bbvocab;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 import net.rim.device.api.system.PersistentObject;
 import net.rim.device.api.system.PersistentStore;
-import net.rim.device.api.util.SimpleSortingVector;
 
 public class Settings {
 
@@ -29,16 +29,16 @@ public class Settings {
 	
 	private static Hashtable initSettings() {
 		Hashtable hashtable = new Hashtable();
-		hashtable.put(WORD_LIST, new SimpleSortingVector());
+		hashtable.put(WORD_LIST, new Vector());
 		return hashtable;
 	}
 	
-	public SimpleSortingVector getWordList() {
-		return (SimpleSortingVector) settingsBag.get(WORD_LIST);
+	public Vector getWordList() {
+		return (Vector) settingsBag.get(WORD_LIST);
 	}
 	
 	public void addWordToList(String word) {
-		SimpleSortingVector wordList = (SimpleSortingVector)settingsBag.get(WORD_LIST);
+		Vector wordList = (Vector)settingsBag.get(WORD_LIST);
 		if (wordList.indexOf((String)word) == -1) {
 			wordList.addElement(word);
 		}
@@ -46,13 +46,13 @@ public class Settings {
 	}
 	
 	public void deleteWordFromList(String word) {
-		SimpleSortingVector wordList = (SimpleSortingVector) settingsBag.get(WORD_LIST);
+		Vector wordList = (Vector) settingsBag.get(WORD_LIST);
 		wordList.removeElement(word);
 		settingsBag.put(WORD_LIST, wordList);
 	}
 	
 	public void saveSettings() {
 		persistentObject.setContents(settingsBag);
-		persistentObject.commit();
+		persistentObject.commit();		
 	}
 }
