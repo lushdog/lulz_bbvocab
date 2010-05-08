@@ -48,7 +48,7 @@ public class VocabMainScreen extends MainScreen implements FieldChangeListener {
 			thread.start();
 		}		
 		else if (field == addToMyWordsButton) {
-			addToMyWordsMenuItem();
+			addToMyWords();
 		}		
 	}
 	
@@ -59,7 +59,7 @@ public class VocabMainScreen extends MainScreen implements FieldChangeListener {
 		this.definitionText.setText(text);
 	}
 	
-	public void addToMyWordsMenuItem() {
+	public void addToMyWords() {
 		Settings.INSTANCE.addWordToList(getWordText());
 		Dialog.inform("Added To 'My Words'");
 	}
