@@ -3,16 +3,15 @@ package com.juksoft.bbvocab;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import com.juksoft.bbvocab.VocabMainScreen.GoToMyWordsMenuItem;
-
 import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.ObjectListField;
 import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.util.SimpleSortingVector;
 
-public class MyWordsScreen extends MainScreen {
+public class MyWordsScreen extends MainScreen  {
 
 	ObjectListField wordListField;
 	Vector wordVec = (Vector) Settings.INSTANCE.getWordList();
@@ -40,12 +39,32 @@ public class MyWordsScreen extends MainScreen {
 	
 	protected void makeMenu(Menu menu, int instance) {
 		super.makeMenu(menu, instance);
+		menu.add(new SelectWordMenuItem(this));
 		menu.add(new DeleteWordMenuItem());
+	}
+
+	public class SelectWordMenuItem extends MenuItem	{
+		
+		Screen holdingScreen;
+		
+		public SelectWordMenuItem(Screen screen) {
+			super("Select", 1, 1);
+			holdingScreen = screen;
+		}
+
+		public void run() {
+			VocabMainScreen newScreen = new VocabMainScreen();
+			UiApplication.getUiApplication().popScreen(holdingScreen);
+			UiApplication.getUiApplication().pushScreen(newScreen);
+			newScreen.setWordText((String)wordVec.elementAt(wordListField.getSelectedIndex()));	
+			Thread thread = new GetDefinitionThread(newScreen);
+			thread.start();
+		}		
 	}
 	
 	public class DeleteWordMenuItem extends MenuItem	{
 		public DeleteWordMenuItem() {
-			super("Delete", 1, 1);
+			super("Delete", 2, 2);
 		}
 
 		public void run() {
@@ -57,5 +76,5 @@ public class MyWordsScreen extends MainScreen {
 			String[] words = wordListVectorToArray(wordVec);
 			wordListField.set(words);			
 		}		
-	}
+	}	
 }

@@ -55,6 +55,11 @@ public class VocabMainScreen extends MainScreen implements FieldChangeListener {
 	public String getWordText() {
 		return wordText.getText().trim();
 	}
+	
+	public void setWordText(String word) {
+		wordText.setText(word.trim());
+	}
+	
 	public void setDefinitionText(String text) {
 		this.definitionText.setText(text);
 	}

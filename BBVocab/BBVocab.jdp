@@ -17,6 +17,8 @@ AutoRestart=0
 ]
 [DefFiles
 ]
+[DependencyFiles
+]
 [DependsOn
 ]
 ExcludeFromBuildAll=0
