@@ -53,7 +53,7 @@ public class MyWordsScreen extends MainScreen  {
 		}
 
 		public void run() {
-			VocabMainScreen newScreen = new VocabMainScreen();
+			DictionaryScreen newScreen = new DictionaryScreen();
 			UiApplication.getUiApplication().popScreen(holdingScreen);
 			UiApplication.getUiApplication().pushScreen(newScreen);
 			newScreen.setWordText((String)wordVec.elementAt(wordListField.getSelectedIndex()));	
