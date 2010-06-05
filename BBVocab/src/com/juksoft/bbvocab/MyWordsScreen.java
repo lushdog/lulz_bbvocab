@@ -15,9 +15,10 @@ public class MyWordsScreen extends MainScreen  {
 
 	ObjectListField wordListField;
 	Vector wordVec = (Vector) Settings.INSTANCE.getWordList();
+	String[] words;
 	
 	public MyWordsScreen()  {
-		String[] words = wordListVectorToArray(wordVec);
+		words = wordListVectorToArray(wordVec);
 		wordListField = new ObjectListField(FIELD_LEFT);
 		wordListField.set(words);
 		this.add(wordListField);
@@ -56,7 +57,7 @@ public class MyWordsScreen extends MainScreen  {
 			DictionaryScreen newScreen = new DictionaryScreen();
 			UiApplication.getUiApplication().popScreen(holdingScreen);
 			UiApplication.getUiApplication().pushScreen(newScreen);
-			newScreen.setWordText((String)wordVec.elementAt(wordListField.getSelectedIndex()));	
+			newScreen.setWordText((String)words[wordListField.getSelectedIndex()]);	
 			Thread thread = new GetDefinitionThread(newScreen);
 			thread.start();
 		}		
@@ -73,7 +74,7 @@ public class MyWordsScreen extends MainScreen  {
 				String word = wordListField.get(wordListField, selectedIndexes[i]).toString();
 				wordVec.removeElement(word);				
 			}
-			String[] words = wordListVectorToArray(wordVec);
+			words = wordListVectorToArray(wordVec);
 			wordListField.set(words);			
 		}		
 	}	
