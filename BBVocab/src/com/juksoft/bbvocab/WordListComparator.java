@@ -13,5 +13,4 @@ public class WordListComparator implements Comparator {
 		}
 		return compareInt;
 	}
-
 }

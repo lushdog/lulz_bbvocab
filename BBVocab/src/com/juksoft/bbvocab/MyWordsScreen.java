@@ -18,7 +18,7 @@ public class MyWordsScreen extends MainScreen  {
 	
 	public MyWordsScreen()  {
 		String[] words = wordListVectorToArray(wordVec);
-		wordListField = new ObjectListField(words.length);
+		wordListField = new ObjectListField(FIELD_LEFT);
 		wordListField.set(words);
 		this.add(wordListField);
 	}

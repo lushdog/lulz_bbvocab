@@ -12,11 +12,10 @@ public class Settings {
 	public static final Settings INSTANCE = new Settings();
 	private Hashtable settingsBag = null;
 	private PersistentObject persistentObject = null;
-	private static final long settingsKey = 0x195da3c07d98835L;
 	
 	protected Settings() {
 		
-		persistentObject = PersistentStore.getPersistentObject(settingsKey);
+		persistentObject = PersistentStore.getPersistentObject(Util.appKey);
 		Object settings = persistentObject.getContents();
 		
 		if (settings == null) {
