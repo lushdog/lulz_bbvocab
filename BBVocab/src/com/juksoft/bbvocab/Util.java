@@ -1,10 +1,5 @@
 package com.juksoft.bbvocab;
 
-import java.util.Vector;
-
-import net.rim.device.api.ui.Font;
-import net.rim.device.api.ui.component.ActiveRichTextField;
-
 public class Util {
 	
 	final static long appKey = 0x195da3c07d98835L;

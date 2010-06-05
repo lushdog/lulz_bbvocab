@@ -3,7 +3,6 @@ package com.juksoft.bbvocab;
 import net.rim.blackberry.api.menuitem.ApplicationMenuItem;
 import net.rim.blackberry.api.stringpattern.PatternRepository;
 import net.rim.device.api.system.ApplicationDescriptor;
-import net.rim.device.api.system.RuntimeStore;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.MenuItem;
@@ -12,6 +11,7 @@ import net.rim.device.api.ui.component.ActiveRichTextField;
 import net.rim.device.api.ui.component.BasicEditField;
 import net.rim.device.api.ui.component.ButtonField;
 import net.rim.device.api.ui.component.Dialog;
+import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.SeparatorField;
 import net.rim.device.api.ui.container.MainScreen;
@@ -25,6 +25,8 @@ public class DictionaryScreen extends MainScreen implements FieldChangeListener 
 	SeparatorField separator;	
 	
 	public DictionaryScreen() {
+		this.setBanner(new LabelField("My Dictionary"));
+		
 		wordText = new BasicEditField("Word:", "");
 		this.add(wordText);
 		

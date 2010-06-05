@@ -6,6 +6,7 @@ import java.util.Vector;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.ObjectListField;
 import net.rim.device.api.ui.container.MainScreen;
@@ -18,6 +19,7 @@ public class MyWordsScreen extends MainScreen  {
 	String[] words;
 	
 	public MyWordsScreen()  {
+		this.setBanner(new LabelField("My Words"));
 		words = wordListVectorToArray(wordVec);
 		wordListField = new ObjectListField(FIELD_LEFT);
 		wordListField.set(words);
